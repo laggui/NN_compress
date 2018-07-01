@@ -50,7 +50,6 @@ class VGG(nn.Module):
                         #nn.Linear(4096, num_classes) # For input_size = 224
 						nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), num_classes) # For input_size = 32 (CIFAR-10)
                         )
-        self._init_weights()
 
     def forward(self, x): # computation performed at every call
         x = self.features(x)
@@ -69,7 +68,7 @@ class VGG(nn.Module):
         '''
         cfg = {
 				'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
-				'D-DSM': [64, (64, 1), 'M', (128, 1), (128, 1), 'M', (256, 1), (256, 1), (256, 1), 'M', (512, 1), (512, 1), (512, 1), 'M', (512, 1), (512, 1), (512, 1), 'M'] 
+				'D-DSM': [64, (64, 1), 'M', (128, 1), (128, 1), 'M', (256, 1), (256, 1), (256, 1), 'M', (512, 1), (512, 1), (512, 1), 'M', (512, 1), (512, 1), (512, 1), 'M'], 
                 'D-DS': [64, (64, 2), (128, 2), (128, 1), (256, 2), (256, 1), (256, 1), (512, 2), (512, 1), (512, 1), (512, 2), (512, 1), (512, 1)]
 		}
         
@@ -93,13 +92,3 @@ class VGG(nn.Module):
                     in_channels = x[0] # Next input is the size of current output                    
         
         return nn.Sequential(*layers)
-    
-    def _init_weights(self):
-        for m in self.modules(): # Loop over each layer to initialize weights
-            if isinstance(m, nn.Conv2d):
-                nn.init.xavier_uniform_(m.weight)
-                if m.bias is not None:
-                    m.bias.data.zero_()
-            elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.constant_(m.bias, 0)
