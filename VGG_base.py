@@ -41,13 +41,14 @@ class VGG(nn.Module):
         super(VGG, self).__init__()
         self.features = self._make_layers(vgg_cfg)
         self.classifier = nn.Sequential(
-                        nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), 4096),
-                        nn.ReLU(inplace=True),
-                        nn.Dropout(), # Dropout of 0.5 is default, as in paper
-                        nn.Linear(4096, 4096),
-                        nn.ReLU(inplace=True),
-                        nn.Dropout(),
-                        nn.Linear(4096, num_classes)
+                        #nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), 4096),
+                        #nn.ReLU(inplace=True),
+                        #nn.Dropout(), # Dropout of 0.5 is default, as in paper
+                        #nn.Linear(4096, 4096),
+                        #nn.ReLU(inplace=True),
+                        #nn.Dropout(),
+                        #nn.Linear(4096, num_classes) # For input_size = 224
+						nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), num_classes) # For input_size = 32 (CIFAR-10)
                         )
         self._init_weights()
 
@@ -62,17 +63,20 @@ class VGG(nn.Module):
         For portability, if other configurations of the network 
         need to be defined (e.g., A, B, C or E from the VGG paper)
         ''' 
-        cfg = {'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M']}
+        cfg = {
+				'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
+				'COMPACT': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'] # Compact model with depthwise separable convolutions
+		}
         
         in_channels = 3 # RGB images
         layers = []
         
-        for conv in cfg[vgg_cfg]:
-            if conv == 'M': # MaxPool: 2x2 kernel, 2px stride
+        for x in cfg[vgg_cfg]:
+            if x == 'M': # MaxPool: 2x2 kernel, 2px stride
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
             else: # Convolution: 3x3 filters, 1px stride, 1px padding            
-                layers += [nn.Conv2d(in_channels, conv, kernel_size=3, padding=1), nn.ReLU(inplace=True)]
-                in_channels = conv # Next conv input is the size of current output
+                layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1), nn.ReLU(inplace=True)]
+                in_channels = x # Next conv input is the size of current output
         
         return nn.Sequential(*layers)
     
