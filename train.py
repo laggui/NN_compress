@@ -164,7 +164,7 @@ train_loader, val_loader = get_train_valid_loader(data_dir='./data',
 
 # Model
 print('==> Building model...')
-model = VGG('D', input_size=32) # VGG16 is configuration D (refer to paper)
+model = VGG('D', num_classes=10, input_size=32) # VGG16 is configuration D (refer to paper)
 model = model.to(device)
 
 # Training
