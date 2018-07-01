@@ -20,16 +20,18 @@ if device == 'cuda:0':
 def train(model, train_loader, criterion, optimizer, epoch):
     model.train()
     print_freq = 10 # print every 10 batches
-    train_loss = 0.0
+    train_loss = 0
+    print('Epoch:%d', epoch)
+    
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs.to(device), targets.to(device)
+        optimizer.zero_grad()
         
         # compute output
         outputs = model(inputs)        
         loss = criterion(outputs, targets)
         
         # compute gradient and do SGD step
-        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         
@@ -37,8 +39,7 @@ def train(model, train_loader, criterion, optimizer, epoch):
         train_loss += loss.item()
         
         if batch_idx % print_freq == 0:
-            print('Epoch %d, Batch: %d, Loss: %f' % (epoch+1, batch_idx+1, train_loss/print_freq))
-            train_loss = 0.0
+            print('Batch: %d, Loss: %f' % (batch_idx+1, (train_loss/(batch_idx+1))))
 
 def validate(model, val_loader, criterion):
     model.eval()
@@ -68,7 +69,7 @@ def get_train_valid_loader(data_dir,
                            augment=False,
                            random_seed=3,
                            valid_size=0.1,
-                           shuffle=False,
+                           shuffle=True,
                            num_workers=4,
                            pin_memory=False):
     '''
@@ -156,10 +157,10 @@ def get_train_valid_loader(data_dir,
 print('==> Preparing data...')
 
 train_loader, val_loader = get_train_valid_loader(data_dir='./data', 
-                                                  batch_size=256,
+                                                  batch_size=128,
                                                   augment=True,
                                                   valid_size=0,												  
-                                                  num_workers=4, 
+                                                  num_workers=2, 
                                                   pin_memory=True)
 
 # Model
@@ -168,8 +169,8 @@ model = VGG('D', num_classes=10, input_size=32) # VGG16 is configuration D (refe
 model = model.to(device)
 
 # Training
-num_epochs = 150 # as opposed to the paper (74) because of CIFAR10 dataset
-lr = 0.01
+num_epochs = 200 # as opposed to the paper (74) because of CIFAR10 dataset
+lr = 0.1
 # define loss function (criterion) and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=5e-4)
