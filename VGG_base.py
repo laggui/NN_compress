@@ -83,10 +83,10 @@ class VGG(nn.Module):
                     layers += [nn.Conv2d(in_channels, x, kernel_size=3, padding=1), nn.BatchNorm2d(x), nn.ReLU(inplace=True)]
                     in_channels = x # Next input is the size of current output
                 else: # Depthwise separable
-                    layers += [nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=x[1], padding=1, groups=in_channels, bias=False),
+                    layers += [nn.Conv2d(in_channels, in_channels, kernel_size=3, stride=x[1], padding=1, groups=in_channels, bias=True),
                                nn.BatchNorm2d(in_channels),
                                nn.ReLU(inplace=True), 
-                               nn.Conv2d(in_channels, x[0], kernel_size=1, padding=0, bias=False), 
+                               nn.Conv2d(in_channels, x[0], kernel_size=1, padding=0, bias=True), 
                                nn.BatchNorm2d(x[0]), 
                                nn.ReLU(inplace=True)]
                     in_channels = x[0] # Next input is the size of current output                    
