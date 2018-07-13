@@ -26,9 +26,9 @@ We have chosen to implement VGGNet (16 layers) as the baseline model in order to
 In order to have more comparable results, we chose to implement the VGG-16 architecture with depthwise separable convolutions. Our compact VGG-16 architecture, namely VGG16-DS in the tables below, is based on the [MobileNet](https://arxiv.org/abs/1704.04861) implementation, replacing all of the standard convolutions with depthwise separable convolutions except for the first layer which is a full convolution. Theoretically, this factorization has the effect of drastically reducing computation and model size. In practice, the efficiency of this method depends on the implementation within the framework used (here, PyTorch).
 
 ## Accuracy
-| Model             | Acc.        |
-| ----------------- | ----------- |
+| Model             | Acc.        | Model Size  | Model Size  |
+| ----------------- | ----------- | ----------- |
 | [VGG16](https://arxiv.org/abs/1409.1556)          | 90.03% |
-| VGG16-DS									        | 86.55% |
-| VGG16-Quant									    | - |
+| VGG16-DS									        | 89.98% |
+| VGG16-Quant									    | 88.13% |
 | VGG16-FPruned									    | - |
