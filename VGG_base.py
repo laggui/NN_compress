@@ -5,7 +5,7 @@
 # But the implementation allows for other configurations to be added in the future (see cfg in _make_layers)
 # 
 # -------------------------
-# Calculating the number of parameters for the fully connected layers below.
+# Calculating the input size for the first fully connected layer.
 # 
 # Depth: number of filters from conv
 # 
@@ -13,22 +13,9 @@
 # and jumping by 2 pixels to do the next calculation (no overlap), so the spatial resolution is divided by 
 # 2 in each pooling layer
 # 
-# Thus, by starting with RGB images of size 224x224 pixels (as the paper specified), with 5 MaxPool layers we get: 
-# 224/(2^5) = 7 
-# Input of first fully connected layer = output of last conv layer after MaxPool = 7x7x512
-# 
-# -------------------------
-# Notes on weight initialization:
-# 
-# xavier_uniform()
-# Fills the input Tensor with values according to the method described in Glorot, X. & Bengio, Y. (2010) 
-# using a uniform distribution. 
-# 
-# From the paper: "It is worth noting that after the paper submission we found that it is possible to initialise 
-# the weights without pre-training by using the random initialisation procedure of Glorot & Bengio (2010)"
-# "For random initialisation (where applicable), we sampled the weights from a normal distribution with the zero mean
-# and 10^−2 variance."
-
+# Thus, by starting with RGB images of size 224x224 pixels (as the paper specified), with 5 Maxpool layers we get: 
+# input_size/(2^5) = 224/(2^5)
+# Input of first fully connected layer = output of last conv layer after Maxpool = 7x7x512 as in the paper.
 
 import torch
 import torch.nn as nn
@@ -41,13 +28,13 @@ class VGG(nn.Module):
         super(VGG, self).__init__()
         self.features = self._make_layers(vgg_cfg)
         self.classifier = nn.Sequential(
-                        #nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), 4096),
-                        #nn.ReLU(inplace=True),
-                        #nn.Dropout(), # Dropout of 0.5 is default, as in paper
-                        #nn.Linear(4096, 4096),
-                        #nn.ReLU(inplace=True),
-                        #nn.Dropout(),
-                        #nn.Linear(4096, num_classes) # For input_size = 224
+						#nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), 4096),
+						#nn.ReLU(inplace=True),
+						#nn.Dropout(), # Dropout of 0.5 is default, as in paper
+						#nn.Linear(4096, 4096),
+						#nn.ReLU(inplace=True),
+						#nn.Dropout(),
+						#nn.Linear(4096, num_classes) # For input_size = 224
 						nn.Linear(int((input_size/(2**5))*(input_size/(2**5))*512), num_classes) # For input_size = 32 (CIFAR-10)
                         )
 
@@ -69,7 +56,7 @@ class VGG(nn.Module):
         cfg = {
 				'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
 				'D-DSM': [64, (64, 1), 'M', (128, 1), (128, 1), 'M', (256, 1), (256, 1), (256, 1), 'M', (512, 1), (512, 1), (512, 1), 'M', (512, 1), (512, 1), (512, 1), 'M'], 
-                'D-DS': [64, (64, 2), (128, 2), (128, 1), (256, 2), (256, 1), (256, 1), (512, 2), (512, 1), (512, 1), (512, 2), (512, 1), (512, 1)]
+				'D-DS': [64, (64, 2), (128, 2), (128, 1), (256, 2), (256, 1), (256, 1), (512, 2), (512, 1), (512, 1), (512, 2), (512, 1), (512, 1)]
 		}
         
         in_channels = 3 # RGB images
