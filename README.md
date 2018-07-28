@@ -30,4 +30,5 @@ In order to have more comparable results, we chose to implement the VGG-16 archi
 | [VGG16](https://arxiv.org/abs/1409.1556)	| 90.03% | 14.73M	   | 313.2M		 | 56.2MB	   | 11.26h		 | [netscope](http://dgschwend.github.io/netscope/#/gist/39f3f0440565971ab5cdfb87cb18f96a) |
 | VGG16-DS									| 89.98% | 1.70M	   | 38M		 | 6.53MB	   | 2.24h		 | [netscope](http://dgschwend.github.io/netscope/#/gist/ec507bd651306560fdb4917073b7a209) |
 | VGG16-Q									| 88.13% | 14.73M	   | 313.2M		 | 56.2MB	   | N/A		 | [netscope](http://dgschwend.github.io/netscope/#/gist/39f3f0440565971ab5cdfb87cb18f96a) |
+
 *Note: the drop in accuracy observed in the 'quantized' model is only due to the error introduced by quantizing and dequantizing the values.*
