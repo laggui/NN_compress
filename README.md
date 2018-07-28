@@ -19,16 +19,15 @@ We have chosen to implement VGGNet (16 layers) as the baseline model in order to
 | CIFAR-10          | 3072 (32 x 32 color)   | 10   | 50K   | 10K   | 200 |
 
 ### Quantization
-
-### Filter-level Pruning
+We chose to implement our quantization algorithm to convert a pretrained floating point model in order to use its quantized form, namely VGG16-Q in the table below, for inference, the most important part when deploying it on limited resource hardware. In order to convert the pretrained model to its quantized counterpart, we make use of PyTorch's \cite{PyTorch} \textit{nn.Module}'s dictionary to convert the values of the different parameters and layers' activations. Sadly, PyTorch doesn't currently support lower bitwidth operations (e.g 8-bit fixed-point operations), while Tensorflow does (for the most part). As a result, our implementation is more of a simulation since the quantized network will still be computed with 32-bit floating point representation of the tensors and floating point arithmetics.
 
 ### Compact Network Design
-In order to have more comparable results, we chose to implement the VGG-16 architecture with depthwise separable convolutions. Our compact VGG-16 architecture, namely VGG16-DS in the tables below, is based on the [MobileNet](https://arxiv.org/abs/1704.04861) implementation, replacing all of the standard convolutions with depthwise separable convolutions except for the first layer which is a full convolution. Theoretically, this factorization has the effect of drastically reducing computation and model size. In practice, the efficiency of this method depends on the implementation within the framework used (here, PyTorch).
+In order to have more comparable results, we chose to implement the VGG-16 architecture with depthwise separable convolutions. Our compact VGG-16 architecture, namely VGG16-DS in the table below, is based on the [MobileNet](https://arxiv.org/abs/1704.04861) implementation, replacing all of the standard convolutions with depthwise separable convolutions except for the first layer which is a full convolution. Theoretically, this factorization has the effect of drastically reducing computation and model size. In practice, the efficiency of this method depends on the implementation within the framework used (here, PyTorch).
 
 ## Accuracy
-| Model             | Acc.        |
-| ----------------- | ----------- 
-| [VGG16](https://arxiv.org/abs/1409.1556)          | 90.03% |
-| VGG16-DS									        | 89.98% |
-| VGG16-Quant									    | 88.13% |
-| VGG16-FPruned									    | - |
+| Model 									| Acc.	 | Parameters  | MACs        | Model Size  | Train Time  | Architecture |
+| ----------------- 						| :----: | :---------: | :---------: | :---------: | :---------: | :----------: |
+| [VGG16](https://arxiv.org/abs/1409.1556)	| 90.03% | 14.73M	   | 313.2M		 | 56.2MB	   | 11.26h		 | [netscope](http://dgschwend.github.io/netscope/#/gist/39f3f0440565971ab5cdfb87cb18f96a) |
+| VGG16-DS									| 89.98% | 1.70M	   | 38M		 | 6.53MB	   | 2.24h		 | [netscope](http://dgschwend.github.io/netscope/#/gist/ec507bd651306560fdb4917073b7a209) |
+| VGG16-Q									| 88.13% | 14.73M	   | 313.2M		 | 56.2MB	   | N/A		 | [netscope](http://dgschwend.github.io/netscope/#/gist/39f3f0440565971ab5cdfb87cb18f96a) |
+* Note: the drop in accuracy observed in the 'quantized' model is only due to the error introduced by quantizing and dequantizing the values.'
